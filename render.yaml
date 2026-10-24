@@ -1,0 +1,50 @@
+services:
+  - type: web
+    name: stockflow-api
+    runtime: docker
+    plan: free
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: DB_HOST
+        fromDatabase:
+          name: stockflow-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: stockflow-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: stockflow-db
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: stockflow-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: stockflow-db
+          property: password
+      - key: PORT
+        value: "10000"
+      - key: JWT_SECRET
+        generateValue: true
+
+  - type: web
+    name: stockflow-web
+    runtime: docker
+    plan: free
+    dockerfilePath: ./frontend/Dockerfile
+    dockerContext: ./frontend
+
+    envVars:
+      - key: PORT
+        value: "10000"
+
+databases:
+  - name: stockflow-db
+    plan: free
+    databaseName: stockflow
+    user: stockflow
