@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
-  base: '/StockFlow/',
+  base: process.env.VITE_BASE_PATH ?? '/StockFlow/',
   server: {
     proxy: {
       '/api': 'http://localhost:8080'
