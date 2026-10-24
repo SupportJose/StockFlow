@@ -4,8 +4,10 @@ COPY pom.xml .
 RUN mvn -q -DskipTests dependency:go-offline
 COPY src src
 RUN mvn -q -DskipTests package
+
 FROM eclipse-temurin:17.0.15_6-jre-alpine
 RUN addgroup -S app && adduser -S app -G app
 USER app
 COPY --from=build /app/target/stockflow-api-1.0.0.jar /app.jar
+EXPOSE 10000
 ENTRYPOINT ["java","-jar","/app.jar"]
