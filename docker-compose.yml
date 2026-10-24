@@ -5,19 +5,35 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-stockflow}
       POSTGRES_USER: ${POSTGRES_USER:-stockflow}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-local-change-me}
-    volumes: [postgres_data:/var/lib/postgresql/data]
-    healthcheck: {test: ["CMD-SHELL", "pg_isready -U stockflow"], interval: 5s, timeout: 5s, retries: 10}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-stockflow}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
   api:
     build: ./backend
+    networks:
+      default:
+        aliases:
+          - stockflow-api
     environment:
       DB_URL: jdbc:postgresql://db:5432/${POSTGRES_DB:-stockflow}
       DB_USER: ${POSTGRES_USER:-stockflow}
       DB_PASSWORD: ${POSTGRES_PASSWORD:-local-change-me}
-      JWT_SECRET: ${JWT_SECRET}
-    ports: ["8080:8080"]
-    depends_on: {db: {condition: service_healthy}}
+      JWT_SECRET: ${JWT_SECRET:-local-development-secret-at-least-32-characters}
+      PORT: 10000
+    ports:
+      - "8080:10000"
+    depends_on:
+      db:
+        condition: service_healthy
   web:
     build: ./frontend
-    ports: ["5173:80"]
-    depends_on: [api]
-volumes: {postgres_data: {}}
+    ports:
+      - "5173:10000"
+    depends_on:
+      - api
+volumes:
+  postgres_data:
