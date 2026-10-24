@@ -1,0 +1,7 @@
+package com.stockflow.inventory;
+import jakarta.validation.Valid; import lombok.RequiredArgsConstructor; import org.springframework.http.*; import org.springframework.security.access.prepost.PreAuthorize; import org.springframework.web.bind.annotation.*; import java.util.*;
+@RestController @RequestMapping("/api/v1/inventory") @RequiredArgsConstructor public class InventoryController {private final InventoryService service;private final StockBalanceRepository balances;private final InventoryMovementRepository movements;
+ @PostMapping("/receipts/post") @PreAuthorize("hasAuthority('inventory.receive')") ResponseEntity<Map<String,UUID>> receive(@RequestHeader("Idempotency-Key") String key,@Valid @RequestBody StockCommand c){return ResponseEntity.status(201).body(Map.of("movementId",service.post(key,MovementType.RECEIPT,c)));}
+ @PostMapping("/dispatches/post") @PreAuthorize("hasAuthority('inventory.dispatch')") ResponseEntity<Map<String,UUID>> dispatch(@RequestHeader("Idempotency-Key") String key,@Valid @RequestBody StockCommand c){return ResponseEntity.status(201).body(Map.of("movementId",service.post(key,MovementType.ISSUE,c)));}
+ @GetMapping("/balances") List<StockBalance> balances(@RequestParam UUID companyId){return balances.findByCompanyId(companyId);}
+ @GetMapping("/movements") List<InventoryMovement> movements(@RequestParam UUID companyId){return movements.findByCompanyIdOrderByPostedAtDesc(companyId);}}

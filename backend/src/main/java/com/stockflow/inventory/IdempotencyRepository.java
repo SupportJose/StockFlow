@@ -1,0 +1,1 @@
+package com.stockflow.inventory; import org.springframework.data.jpa.repository.JpaRepository; import java.util.*; public interface IdempotencyRepository extends JpaRepository<IdempotencyRecord,UUID>{Optional<IdempotencyRecord> findByCompanyIdAndKey(UUID c,String key);}

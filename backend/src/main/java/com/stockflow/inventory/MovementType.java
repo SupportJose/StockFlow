@@ -1,0 +1,1 @@
+package com.stockflow.inventory; public enum MovementType { RECEIPT, ISSUE, TRANSFER_OUT, TRANSFER_IN, CUSTOMER_RETURN, SUPPLIER_RETURN, ADJUSTMENT, WRITE_OFF, REVERSAL }
